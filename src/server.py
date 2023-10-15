@@ -47,6 +47,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+unique_meeting_id = "1234"
 llama_prompt = "Describe what is shown on this video call"
 
 transcript_list = []
@@ -109,9 +110,13 @@ async def hello():
 
 
 @app.post("/initiate/")
-async def initiate(input_text: Annotated[str, Form()]):
+async def initiate(
+    input_text: Annotated[str, Form()], unique_id: Annotated[str, Form()]
+):
     global importance_prompt
+    global unique_meeting_id
     importance_prompt = input_text
+    unique_meeting_id = unique_id
     return {"status": "success"}
 
 
