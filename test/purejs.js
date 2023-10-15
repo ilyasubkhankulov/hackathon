@@ -1,6 +1,7 @@
 const uploadFiles = async (imageFile, audioFile) => {
   const formData = new FormData();
 
+  formData.append("input_text", "what is going on here?");
   formData.append("image", imageFile);
   formData.append("audio", audioFile);
 

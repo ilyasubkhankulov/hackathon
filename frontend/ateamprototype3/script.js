@@ -1,13 +1,42 @@
-const client = ZoomMtgEmbedded.createClient()
+const client = ZoomMtgEmbedded.createClient();
 
-let meetingSDKElement = document.getElementById('meetingSDKElement')
+let meetingSDKElement = document.getElementById("meetingSDKElement");
 
-client.init({ zoomAppRoot: meetingSDKElement, language: 'en-US' })
+function generateSignature(key, secret, meetingNumber, role) {
+  var iat = Math.round(new Date().getTime() / 1000) - 30;
+  var exp = iat + 60 * 60 * 2;
+  var oHeader = { alg: "HS256", typ: "JWT" };
+
+  var oPayload = {
+    sdkKey: key,
+    appKey: key,
+    mn: meetingNumber,
+    role: role,
+    iat: iat,
+    exp: exp,
+    tokenExp: exp,
+  };
+
+  var sHeader = JSON.stringify(oHeader);
+  var sPayload = JSON.stringify(oPayload);
+  var sdkJWT = KJUR.jws.JWS.sign("HS256", sHeader, sPayload, secret);
+  return sdkJWT;
+}
+
+var sig = generateSignature(
+  "koXQzo91RFWgqls3gvfVpA",
+  "4hTae08ojOTULZYHIQnuWRJe7fIaBbFm",
+  6765551127,
+  0
+);
+console.log(sig);
+
+client.init({ zoomAppRoot: meetingSDKElement, language: "en-US" });
 
 client.join({
-  sdkKey: 'nP4aJBaSkGzCQ8V35rb8g',
-  signature: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZGtLZXkiOiJuUDRhSkJhU2tHekNROFYzNXJiOGciLCJhcHBLZXkiOiJuUDRhSkJhU2tHekNROFYzNXJiOGciLCJtbiI6NzQ4MTQ5NjU4MDQsInJvbGUiOjAsImlhdCI6MTY5NzM0NTgzMywiZXhwIjoxNjk3MzUzMDMzLCJ0b2tlbkV4cCI6MTY5NzM1MzAzM30.KdOBQ-U-Hui0vgD1ORa6xC86occxYGh-vxyuXY2rtes', // role in SDK signature needs to be 0
-  meetingNumber: '74814965804',
-  password: 'ZNqMoRJufbmtKb30r6Tnee7v7xioDD.1',
-  userName: 'ateam_bot'
-})
+  sdkKey: "koXQzo91RFWgqls3gvfVpA",
+  signature: sig,
+  meetingNumber: "6765551127",
+  password: "eWllTkN1NWxyUnE3Z1NoeGFnL005dz09",
+  userName: "ateam_bot",
+});
